@@ -44,14 +44,11 @@ body{
   color:#fff;
   font-family:var(--font);
   overflow-x:hidden;
+  scrollbar-width:none;
 }
 
 body::-webkit-scrollbar{
   width:0;
-}
-
-body{
-  scrollbar-width:none;
 }
 
 /* =========================================================
@@ -79,27 +76,29 @@ body{
 
 .section{
   position:relative;
-  height:100vh;
   width:100%;
+  height:100vh;
 }
 
 /* =========================================================
-   TYPOGRAPHY
+   HERO
 ========================================================= */
 
 .hero-copy{
-  position:fixed;
+  position:absolute;
   z-index:5;
+
   left:7vw;
   top:50%;
   transform:translateY(-50%);
+
   width:min(520px,42vw);
 
   pointer-events:none;
 
-  transition:
-    opacity .6s ease,
-    transform .8s cubic-bezier(.2,.8,.2,1);
+  opacity:1;
+
+  will-change:transform,opacity;
 }
 
 .hero-title{
@@ -116,20 +115,9 @@ body{
   display:block;
 }
 
-.hero-title .death{
-  color:#fff;
-}
-
-.hero-sub{
-  margin-top:34px;
-  max-width:440px;
-
-  font-size:14px;
-  line-height:1.45;
-  letter-spacing:.01em;
-  font-weight:300;
-  color:var(--light-gray);
-}
+/* =========================================================
+   SMALL RED LABEL
+========================================================= */
 
 .red-caption{
   display:block;
@@ -139,17 +127,19 @@ body{
   line-height:1.2;
   font-weight:600;
   letter-spacing:.06em;
+
   color:var(--blood-6);
   text-transform:uppercase;
 }
 
 /* =========================================================
-   SECTION TEXT
+   CONTENT
 ========================================================= */
 
 .content{
   position:absolute;
   inset:0;
+
   width:100%;
   height:100%;
 
@@ -182,6 +172,10 @@ body{
   width:min(1000px,85vw);
 }
 
+/* =========================================================
+   TYPOGRAPHY
+========================================================= */
+
 .section-title{
   font-size:clamp(44px,5.8vw,84px);
   line-height:.94;
@@ -210,7 +204,7 @@ body{
 }
 
 /* =========================================================
-   HEART TEXT
+   HEART
 ========================================================= */
 
 .heart-text .section-copy{
@@ -232,7 +226,7 @@ body{
 }
 
 /* =========================================================
-   5
+   FIVE
 ========================================================= */
 
 .five-section{
@@ -250,7 +244,9 @@ body{
   font-size:11px;
   font-weight:600;
   letter-spacing:.1em;
+
   color:#650507;
+
   text-transform:uppercase;
   white-space:nowrap;
 }
@@ -276,12 +272,6 @@ body{
   .hero-title{
     font-size:clamp(44px,13vw,82px);
     max-width:90vw;
-  }
-
-  .hero-sub{
-    width:min(390px,75vw);
-    margin-top:24px;
-    font-size:13px;
   }
 
   .content{
@@ -334,15 +324,6 @@ body{
     letter-spacing:-.065em;
   }
 
-  .hero-sub{
-    font-size:12px;
-    max-width:300px;
-  }
-
-  .red-caption{
-    font-size:10px;
-  }
-
   .section-title{
     font-size:44px;
   }
@@ -361,7 +342,7 @@ body{
 <div class="page">
 
   <!-- =====================================================
-       HERO
+       1 — HERO
   ====================================================== -->
 
   <section class="section" data-state="skull">
@@ -371,7 +352,7 @@ body{
       <h1 class="hero-title">
         <span>NO PUEDES</span>
         <span>ESCAPAR DE</span>
-        <span class="death">LA MUERTE.</span>
+        <span>LA MUERTE.</span>
       </h1>
 
     </div>
@@ -380,16 +361,18 @@ body{
 
 
   <!-- =====================================================
-       SCENE 2 — PARTICLES DISPERSED
+       2 — DISPERSED
   ====================================================== -->
 
   <section class="section" data-state="dispersed">
 
-    <div class="content left" id="content2">
+    <div class="content left">
 
       <div class="content-inner">
 
-        <div class="red-caption">EL EQUILIBRIO RECUERDA</div>
+        <div class="red-caption">
+          EL EQUILIBRIO RECUERDA
+        </div>
 
         <div class="section-copy">
 
@@ -416,7 +399,7 @@ body{
 
 
   <!-- =====================================================
-       SCENE 3 — HEART
+       3 — HEART
   ====================================================== -->
 
   <section class="section" data-state="heart">
@@ -425,7 +408,9 @@ body{
 
       <div class="content-inner">
 
-        <div class="red-caption">UN LATIDO MÁS</div>
+        <div class="red-caption">
+          UN LATIDO MÁS
+        </div>
 
         <div class="section-copy">
 
@@ -454,7 +439,7 @@ body{
 
 
   <!-- =====================================================
-       SCENE 4 — VOID
+       4 — VOID
   ====================================================== -->
 
   <section class="section" data-state="void">
@@ -476,7 +461,7 @@ body{
 
 
   <!-- =====================================================
-       SCENE 5 — NUMBER 5
+       5 — NUMBER 5
   ====================================================== -->
 
   <section class="section five-section" data-state="five">
@@ -491,8 +476,9 @@ body{
 
 
 <script>
+
 /* =========================================================
-   PARTICLE SYSTEM
+   CANVAS
 ========================================================= */
 
 const canvas = document.getElementById("particleCanvas");
@@ -503,7 +489,13 @@ const DPR = Math.min(window.devicePixelRatio || 1, 2);
 let width = 0;
 let height = 0;
 
+
+/* =========================================================
+   PARTICLES
+========================================================= */
+
 let particles = [];
+
 let skullTargets = [];
 let heartTargets = [];
 let fiveTargets = [];
@@ -511,11 +503,17 @@ let fiveTargets = [];
 let scatteredTargets = [];
 let voidTargets = [];
 
-let currentState = "skull";
-let previousState = "skull";
 
-let scrollProgress = 0;
+/* =========================================================
+   SCROLL
+========================================================= */
+
 let globalProgress = 0;
+
+
+/* =========================================================
+   MOUSE
+========================================================= */
 
 let mouseX = 0;
 let mouseY = 0;
@@ -525,7 +523,7 @@ let targetMouseY = 0;
 
 
 /* =========================================================
-   COLORS — BLOOD / CRIMSON PALETTE
+   COLORS
 ========================================================= */
 
 const colors = [
@@ -540,7 +538,7 @@ const colors = [
 
 
 /* =========================================================
-   RANDOM HELPERS
+   HELPERS
 ========================================================= */
 
 function rand(min,max){
@@ -559,10 +557,6 @@ function easeInOut(t){
   return t < .5
     ? 2*t*t
     : 1-Math.pow(-2*t+2,2)/2;
-}
-
-function easeOut(t){
-  return 1-Math.pow(1-t,3);
 }
 
 
@@ -588,26 +582,23 @@ function resize(){
   if(!particles.length){
     createParticles();
   }
+
+  createAmbient();
 }
 
-window.addEventListener("resize", resize);
+window.addEventListener("resize",resize);
 
 
 /* =========================================================
-   OFFSCREEN SHAPE SAMPLING
+   SHAPE SAMPLER
 ========================================================= */
 
-function sampleCanvas(drawFunction, count){
-
-  const scale = Math.min(1.4, width / 1000);
+function sampleCanvas(drawFunction,count){
 
   const off = document.createElement("canvas");
 
-  const ow = Math.floor(width * .86);
-  const oh = Math.floor(height * .86);
-
-  off.width = Math.max(500,Math.floor(ow));
-  off.height = Math.max(500,Math.floor(oh));
+  off.width = Math.max(600,Math.floor(width*.86));
+  off.height = Math.max(600,Math.floor(height*.86));
 
   const octx = off.getContext("2d");
 
@@ -622,26 +613,19 @@ function sampleCanvas(drawFunction, count){
     off.height
   ).data;
 
-  const available = [];
+  const available=[];
 
   for(let y=0;y<off.height;y+=3){
 
     for(let x=0;x<off.width;x+=3){
 
       const index=(y*off.width+x)*4;
-      const alpha=data[index+3];
 
-      if(alpha>100){
-
-        available.push({
-          x,
-          y
-        });
-
+      if(data[index+3]>100){
+        available.push({x,y});
       }
 
     }
-
   }
 
   const result=[];
@@ -650,9 +634,8 @@ function sampleCanvas(drawFunction, count){
 
     if(!available.length) break;
 
-    const p=available[
-      Math.floor(Math.random()*available.length)
-    ];
+    const p=
+      available[Math.floor(Math.random()*available.length)];
 
     result.push({
       x:(p.x/off.width)*width,
@@ -671,8 +654,6 @@ function sampleCanvas(drawFunction, count){
 
 function generateSkull(){
 
-  const count = 3200;
-
   return sampleCanvas((o,w,h)=>{
 
     const cx=w*.64;
@@ -680,8 +661,6 @@ function generateSkull(){
 
     const skullW=w*.56;
     const skullH=h*.66;
-
-    /* cranium */
 
     o.beginPath();
 
@@ -698,11 +677,13 @@ function generateSkull(){
     o.fillStyle="#fff";
     o.fill();
 
-    /* cheek / jaw */
 
     o.beginPath();
 
-    o.moveTo(cx-skullW*.39,cy+skullH*.12);
+    o.moveTo(
+      cx-skullW*.39,
+      cy+skullH*.12
+    );
 
     o.quadraticCurveTo(
       cx-skullW*.36,
@@ -711,11 +692,20 @@ function generateSkull(){
       cy+skullH*.48
     );
 
-    o.lineTo(cx-skullW*.12,cy+skullH*.65);
+    o.lineTo(
+      cx-skullW*.12,
+      cy+skullH*.65
+    );
 
-    o.lineTo(cx+skullW*.12,cy+skullH*.65);
+    o.lineTo(
+      cx+skullW*.12,
+      cy+skullH*.65
+    );
 
-    o.lineTo(cx+skullW*.16,cy+skullH*.48);
+    o.lineTo(
+      cx+skullW*.16,
+      cy+skullH*.48
+    );
 
     o.quadraticCurveTo(
       cx+skullW*.36,
@@ -725,12 +715,13 @@ function generateSkull(){
     );
 
     o.closePath();
-
     o.fill();
 
-    /* eye holes */
 
     o.globalCompositeOperation="destination-out";
+
+
+    /* OJO IZQUIERDO */
 
     o.beginPath();
 
@@ -746,6 +737,9 @@ function generateSkull(){
 
     o.fill();
 
+
+    /* OJO DERECHO */
+
     o.beginPath();
 
     o.ellipse(
@@ -760,18 +754,32 @@ function generateSkull(){
 
     o.fill();
 
-    /* nose */
+
+    /* NARIZ */
 
     o.beginPath();
 
-    o.moveTo(cx,cy+skullH*.01);
-    o.lineTo(cx-skullW*.055,cy+skullH*.15);
-    o.lineTo(cx+skullW*.055,cy+skullH*.15);
+    o.moveTo(
+      cx,
+      cy+skullH*.01
+    );
+
+    o.lineTo(
+      cx-skullW*.055,
+      cy+skullH*.15
+    );
+
+    o.lineTo(
+      cx+skullW*.055,
+      cy+skullH*.15
+    );
+
     o.closePath();
 
     o.fill();
 
-    /* mouth */
+
+    /* BOCA */
 
     o.beginPath();
 
@@ -787,7 +795,7 @@ function generateSkull(){
 
     o.globalCompositeOperation="source-over";
 
-  },count);
+  },3200);
 }
 
 
@@ -797,12 +805,11 @@ function generateSkull(){
 
 function generateHeart(){
 
-  const count=3200;
-
   return sampleCanvas((o,w,h)=>{
 
     const cx=w*.52;
     const cy=h*.5;
+
     const size=Math.min(w*.42,h*.66);
 
     o.beginPath();
@@ -811,16 +818,14 @@ function generateHeart(){
 
       const t=(i/720)*Math.PI*2;
 
-      const x=
-        16*Math.pow(Math.sin(t),3);
+      const x=16*Math.pow(Math.sin(t),3);
 
-      const y=
-        -(
-          13*Math.cos(t)
-          -5*Math.cos(2*t)
-          -2*Math.cos(3*t)
-          -Math.cos(4*t)
-        );
+      const y=-(
+        13*Math.cos(t)
+        -5*Math.cos(2*t)
+        -2*Math.cos(3*t)
+        -Math.cos(4*t)
+      );
 
       const px=cx+x*(size/32);
       const py=cy+y*(size/32);
@@ -830,7 +835,6 @@ function generateHeart(){
       }else{
         o.lineTo(px,py);
       }
-
     }
 
     o.closePath();
@@ -838,17 +842,15 @@ function generateHeart(){
     o.fillStyle="#fff";
     o.fill();
 
-  },count);
+  },3200);
 }
 
 
 /* =========================================================
-   FIVE
+   NUMBER 5
 ========================================================= */
 
 function generateFive(){
-
-  const count=3200;
 
   return sampleCanvas((o,w,h)=>{
 
@@ -866,7 +868,7 @@ function generateFive(){
       h*.5
     );
 
-  },count);
+  },3200);
 }
 
 
@@ -916,7 +918,7 @@ function generateVoid(){
 
 
 /* =========================================================
-   GENERATE ALL
+   SHAPES
 ========================================================= */
 
 function generateAllShapes(){
@@ -932,92 +934,89 @@ function generateAllShapes(){
 
 
 /* =========================================================
-   PARTICLE CREATION
+   PARTICLES
 ========================================================= */
 
 function createParticles(){
 
-  const count=3200;
-
   particles=[];
 
-  for(let i=0;i<count;i++){
+  for(let i=0;i<3200;i++){
 
     const skull=skullTargets[i] || {
       x:width*.5,
       y:height*.5
     };
 
-    const heart=heartTargets[i] || skull;
-    const five=fiveTargets[i] || skull;
-
     particles.push({
 
-      x:skull.x + rand(-50,50),
-      y:skull.y + rand(-50,50),
+      x:skull.x+rand(-50,50),
+      y:skull.y+rand(-50,50),
 
       vx:0,
       vy:0,
-
-      tx:skull.x,
-      ty:skull.y,
-
-      sx:skull.x,
-      sy:skull.y,
 
       size:rand(.9,2.8),
 
       rotation:rand(0,Math.PI*2),
       rotationSpeed:rand(-.025,.025),
 
-      color:colors[Math.floor(Math.random()*colors.length)],
+      color:
+        colors[
+          Math.floor(Math.random()*colors.length)
+        ],
 
       alpha:rand(.45,.95),
 
       phase:Math.random()*Math.PI*2,
 
       skull,
-      heart,
-      five
+
+      heart:heartTargets[i] || skull,
+
+      five:fiveTargets[i] || skull
 
     });
 
   }
-
 }
 
 
 /* =========================================================
-   STATE TARGETS
+   AMBIENT PARTICLES
 ========================================================= */
 
-function targetForParticle(p,index,state){
+const ambient=[];
 
-  let target;
+function createAmbient(){
 
-  if(state==="skull"){
+  ambient.length=0;
 
-    target=p.skull;
+  for(let i=0;i<130;i++){
 
-  }else if(state==="dispersed"){
+    ambient.push({
 
-    target=scatteredTargets[index % scatteredTargets.length];
+      x:rand(0,width),
+      y:rand(0,height),
 
-  }else if(state==="heart"){
+      size:rand(2,7),
 
-    target=p.heart;
+      rotation:rand(0,Math.PI*2),
 
-  }else if(state==="void"){
+      speed:rand(.05,.18),
 
-    target=voidTargets[index % voidTargets.length];
+      color:
+        colors[
+          Math.floor(Math.random()*colors.length)
+        ],
 
-  }else if(state==="five"){
+      alpha:rand(.08,.28),
 
-    target=p.five;
+      phase:Math.random()*Math.PI*2
+
+    });
 
   }
-
-  return target;
 }
 
 
@@ -1030,34 +1029,42 @@ function updateScroll(){
   const maxScroll=
     document.documentElement.scrollHeight-window.innerHeight;
 
-  const currentScroll=window.scrollY;
-
   globalProgress=
-    clamp(currentScroll/maxScroll,0,1);
+    clamp(window.scrollY/maxScroll,0,1);
 
-  const sectionCount=5;
 
-  const position=globalProgress*(sectionCount-1);
+  /*
+    PRIMERA SECCIÓN:
+    0.00 → 0.25
+    El título sube y desaparece.
+  */
 
-  const index=Math.floor(position);
+  const heroCopy=
+    document.getElementById("heroCopy");
 
-  const local=position-index;
+  const heroProgress=
+    clamp(globalProgress/.25,0,1);
 
-  let state="skull";
+  const heroEase=
+    easeInOut(heroProgress);
 
-  if(index===0) state="skull";
-  if(index===1) state="dispersed";
-  if(index===2) state="heart";
-  if(index===3) state="void";
-  if(index>=4) state="five";
+  const moveUp=
+    heroEase*110;
 
-  currentState=state;
+  const fade=
+    1-heroEase;
 
-  scrollProgress=local;
+  heroCopy.style.transform=
+    `translateY(calc(-50% - ${moveUp}vh))`;
 
+  heroCopy.style.opacity=fade;
 }
 
-window.addEventListener("scroll",updateScroll,{passive:true});
+window.addEventListener(
+  "scroll",
+  updateScroll,
+  {passive:true}
+);
 
 
 /* =========================================================
@@ -1073,7 +1080,39 @@ window.addEventListener("pointermove",(e)=>{
 
 
 /* =========================================================
-   UPDATE PARTICLES
+   GET TARGET
+========================================================= */
+
+function getTarget(p,index,state){
+
+  if(state==="skull"){
+    return p.skull;
+  }
+
+  if(state==="dispersed"){
+    return scatteredTargets[
+      index % scatteredTargets.length
+    ];
+  }
+
+  if(state==="heart"){
+    return p.heart;
+  }
+
+  if(state==="void"){
+    return voidTargets[
+      index % voidTargets.length
+    ];
+  }
+
+  if(state==="five"){
+    return p.five;
+  }
+}
+
+
+/* =========================================================
+   PARTICLE UPDATE
 ========================================================= */
 
 function updateParticles(time){
@@ -1081,18 +1120,20 @@ function updateParticles(time){
   mouseX=lerp(mouseX,targetMouseX,.035);
   mouseY=lerp(mouseY,targetMouseY,.035);
 
-  const particleCount=particles.length;
 
   const stagePosition=
     globalProgress*4;
 
-  const stateIndex=Math.floor(stagePosition);
+  const stateIndex=
+    Math.floor(stagePosition);
 
   const localProgress=
     stagePosition-stateIndex;
 
+
   let fromState;
   let toState;
+
 
   if(stateIndex<=0){
 
@@ -1116,98 +1157,139 @@ function updateParticles(time){
 
   }
 
-  const transition=easeInOut(clamp(localProgress,0,1));
 
-  for(let i=0;i<particleCount;i++){
+  const transition=
+    easeInOut(
+      clamp(localProgress,0,1)
+    );
+
+
+  for(let i=0;i<particles.length;i++){
 
     const p=particles[i];
 
-    const a=targetForParticle(p,i,fromState);
-    const b=targetForParticle(p,i,toState);
+    const a=
+      getTarget(
+        p,
+        i,
+        fromState
+      );
 
-    let tx=lerp(a.x,b.x,transition);
-    let ty=lerp(a.y,b.y,transition);
+    const b=
+      getTarget(
+        p,
+        i,
+        toState
+      );
 
-    /* ambient organic motion */
+
+    let tx=lerp(
+      a.x,
+      b.x,
+      transition
+    );
+
+    let ty=lerp(
+      a.y,
+      b.y,
+      transition
+    );
+
+
+    /* MOVIMIENTO ORGÁNICO */
 
     const movementScale=
-      fromState==="skull" || toState==="heart"
+      (
+        fromState==="skull" ||
+        toState==="heart"
+      )
       ? 1
       : 2.7;
 
-    const waveX=
-      Math.sin(time*.00055+p.phase+i*.0011)
-      *movementScale;
 
-    const waveY=
-      Math.cos(time*.00042+p.phase*1.7+i*.0007)
-      *movementScale;
+    tx+=
+      Math.sin(
+        time*.00055+
+        p.phase+
+        i*.0011
+      )*movementScale;
 
-    tx+=waveX;
-    ty+=waveY;
 
-    /* mouse influence */
+    ty+=
+      Math.cos(
+        time*.00042+
+        p.phase*1.7+
+        i*.0007
+      )*movementScale;
 
-    const mx=
-      p.x + mouseX*8;
 
-    const my=
-      p.y + mouseY*8;
+    /* MOUSE */
 
-    const dx=mx-tx;
-    const dy=my-ty;
+    tx+=mouseX*8;
+    ty+=mouseY*8;
 
-    tx+=dx*.008;
-    ty+=dy*.008;
+
+    /* ATRACCIÓN */
 
     const attraction=
-      fromState==="void" || toState==="void"
+      (
+        fromState==="void" ||
+        toState==="void"
+      )
       ? .018
       : .055;
+
 
     p.vx+=(tx-p.x)*attraction;
     p.vy+=(ty-p.y)*attraction;
 
-    /* friction */
+
+    /* FRICCIÓN */
 
     p.vx*=.83;
     p.vy*=.83;
 
-    /* slight chaotic particle drift */
 
-    p.vx+=Math.sin(time*.0007+p.phase)*.002;
-    p.vy+=Math.cos(time*.0005+p.phase)*.002;
+    /* DRIFT */
+
+    p.vx+=
+      Math.sin(
+        time*.0007+p.phase
+      )*.002;
+
+    p.vy+=
+      Math.cos(
+        time*.0005+p.phase
+      )*.002;
+
 
     p.x+=p.vx;
     p.y+=p.vy;
 
+
     p.rotation+=p.rotationSpeed;
 
-    /* appearance transition */
 
-    const distanceToTarget=
-      Math.hypot(tx-p.x,ty-p.y);
+    /* OPACIDAD */
 
     let alpha=p.alpha;
 
-    if(toState==="void" || fromState==="void"){
-
-      const voidFactor=
-        Math.sin(localProgress*Math.PI);
-
-      alpha*=.45 + voidFactor*.55;
-
-    }
 
     if(
-      currentState==="dispersed" &&
-      globalProgress>0.22 &&
-      globalProgress<0.28
+      fromState==="void" ||
+      toState==="void"
     ){
 
-      alpha*=.8;
+      const voidFactor=
+        Math.sin(
+          localProgress*Math.PI
+        );
 
+      alpha*=
+        .45+
+        voidFactor*.55;
     }
+
 
     drawTriangle(
       p.x,
@@ -1223,10 +1305,17 @@ function updateParticles(time){
 
 
 /* =========================================================
-   TRIANGLE DRAW
+   DRAW TRIANGLE
 ========================================================= */
 
-function drawTriangle(x,y,size,rotation,color,alpha){
+function drawTriangle(
+  x,
+  y,
+  size,
+  rotation,
+  color,
+  alpha
+){
 
   ctx.save();
 
@@ -1240,54 +1329,32 @@ function drawTriangle(x,y,size,rotation,color,alpha){
 
   ctx.beginPath();
 
-  ctx.moveTo(0,-size);
-  ctx.lineTo(size*.86,size*.55);
-  ctx.lineTo(-size*.86,size*.55);
+  ctx.moveTo(
+    0,
+    -size
+  );
+
+  ctx.lineTo(
+    size*.86,
+    size*.55
+  );
+
+  ctx.lineTo(
+    -size*.86,
+    size*.55
+  );
+
   ctx.closePath();
 
   ctx.stroke();
 
   ctx.restore();
-
 }
 
 
 /* =========================================================
-   AMBIENT TRIANGLES
+   AMBIENT UPDATE
 ========================================================= */
-
-const ambient=[];
-
-function createAmbient(){
-
-  ambient.length=0;
-
-  for(let i=0;i<130;i++){
-
-    ambient.push({
-
-      x:rand(0,width),
-      y:rand(0,height),
-
-      size:rand(2,7),
-
-      rotation:rand(0,Math.PI*2),
-
-      speed:rand(.05,.18),
-
-      color:colors[
-        Math.floor(Math.random()*colors.length)
-      ],
-
-      alpha:rand(.08,.28),
-
-      phase:Math.random()*Math.PI*2
-
-    });
-
-  }
-
-}
 
 function updateAmbient(time){
 
@@ -1296,14 +1363,21 @@ function updateAmbient(time){
     p.y-=p.speed;
 
     p.x+=
-      Math.sin(time*.0003+p.phase)*.08;
+      Math.sin(
+        time*.0003+
+        p.phase
+      )*.08;
 
     p.rotation+=.0015;
 
+
     if(p.y<-20){
+
       p.y=height+20;
       p.x=rand(0,width);
+
     }
+
 
     drawTriangle(
       p.x,
@@ -1315,7 +1389,6 @@ function updateAmbient(time){
     );
 
   }
-
 }
 
 
@@ -1325,19 +1398,23 @@ function updateAmbient(time){
 
 function render(time){
 
-  ctx.clearRect(0,0,width,height);
+  ctx.clearRect(
+    0,
+    0,
+    width,
+    height
+  );
 
   updateAmbient(time);
 
   updateParticles(time);
 
   requestAnimationFrame(render);
-
 }
 
 
 /* =========================================================
-   INITIALIZE
+   INIT
 ========================================================= */
 
 function init(){
@@ -1351,7 +1428,6 @@ function init(){
   updateScroll();
 
   requestAnimationFrame(render);
-
 }
 
 init();
