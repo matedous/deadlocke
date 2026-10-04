@@ -1,0 +1,1362 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#000000">
+<title>No puedes escapar de la muerte</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --black:#000000;
+  --white:#ffffff;
+  --gray:#9a9a9a;
+  --light-gray:#bdbdbd;
+
+  --blood-1:#450000;
+  --blood-2:#650507;
+  --blood-3:#82080d;
+  --blood-4:#a50d15;
+  --blood-5:#c41420;
+  --blood-6:#e21b2a;
+  --blood-7:#ff3040;
+
+  --font:"Inter",ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+}
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+html{
+  background:#000;
+  scroll-behavior:smooth;
+}
+
+body{
+  background:#000;
+  color:#fff;
+  font-family:var(--font);
+  overflow-x:hidden;
+}
+
+body::-webkit-scrollbar{
+  width:0;
+}
+
+body{
+  scrollbar-width:none;
+}
+
+/* =========================================================
+   CANVAS
+========================================================= */
+
+#particleCanvas{
+  position:fixed;
+  inset:0;
+  width:100vw;
+  height:100vh;
+  display:block;
+  z-index:1;
+  pointer-events:none;
+}
+
+/* =========================================================
+   PAGE
+========================================================= */
+
+.page{
+  position:relative;
+  z-index:2;
+}
+
+.section{
+  position:relative;
+  height:100vh;
+  width:100%;
+}
+
+/* =========================================================
+   TYPOGRAPHY
+========================================================= */
+
+.hero-copy{
+  position:fixed;
+  z-index:5;
+  left:7vw;
+  top:50%;
+  transform:translateY(-50%);
+  width:min(520px,42vw);
+
+  pointer-events:none;
+
+  transition:
+    opacity .6s ease,
+    transform .8s cubic-bezier(.2,.8,.2,1);
+}
+
+.hero-title{
+  font-size:clamp(52px,7.8vw,113px);
+  line-height:.88;
+  letter-spacing:-.065em;
+  font-weight:400;
+  color:var(--white);
+  text-transform:uppercase;
+  max-width:530px;
+}
+
+.hero-title span{
+  display:block;
+}
+
+.hero-title .death{
+  color:#fff;
+}
+
+.hero-sub{
+  margin-top:34px;
+  max-width:440px;
+
+  font-size:14px;
+  line-height:1.45;
+  letter-spacing:.01em;
+  font-weight:300;
+  color:var(--light-gray);
+}
+
+.red-caption{
+  display:block;
+  margin-bottom:9px;
+
+  font-size:11px;
+  line-height:1.2;
+  font-weight:600;
+  letter-spacing:.06em;
+  color:var(--blood-6);
+  text-transform:uppercase;
+}
+
+/* =========================================================
+   SECTION TEXT
+========================================================= */
+
+.content{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+
+  display:flex;
+  align-items:center;
+
+  padding:0 7vw;
+
+  pointer-events:none;
+}
+
+.content-inner{
+  width:min(570px,46vw);
+}
+
+.content.left{
+  justify-content:flex-start;
+}
+
+.content.right{
+  justify-content:flex-end;
+}
+
+.content.center{
+  justify-content:center;
+  text-align:center;
+}
+
+.content.center .content-inner{
+  width:min(1000px,85vw);
+}
+
+.section-title{
+  font-size:clamp(44px,5.8vw,84px);
+  line-height:.94;
+  letter-spacing:-.055em;
+  font-weight:400;
+  text-transform:uppercase;
+}
+
+.section-copy{
+  margin-top:30px;
+
+  font-size:clamp(18px,1.5vw,22px);
+  line-height:1.5;
+  letter-spacing:-.01em;
+  font-weight:200;
+
+  color:#fff;
+}
+
+.section-copy p{
+  margin-bottom:24px;
+}
+
+.section-copy p:last-child{
+  margin-bottom:0;
+}
+
+/* =========================================================
+   HEART TEXT
+========================================================= */
+
+.heart-text .section-copy{
+  color:#bdbdbd;
+}
+
+.heart-text strong{
+  color:#fff;
+  font-weight:300;
+}
+
+/* =========================================================
+   FINAL
+========================================================= */
+
+.final-copy .section-title{
+  font-size:clamp(50px,7vw,104px);
+  line-height:.9;
+}
+
+/* =========================================================
+   5
+========================================================= */
+
+.five-section{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.five-label{
+  position:absolute;
+  bottom:5vh;
+  left:50%;
+  transform:translateX(-50%);
+
+  font-size:11px;
+  font-weight:600;
+  letter-spacing:.1em;
+  color:#650507;
+  text-transform:uppercase;
+  white-space:nowrap;
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media(max-width:900px){
+
+  .section{
+    height:100svh;
+    min-height:700px;
+  }
+
+  .hero-copy{
+    left:7vw;
+    top:18%;
+    transform:none;
+    width:86vw;
+  }
+
+  .hero-title{
+    font-size:clamp(44px,13vw,82px);
+    max-width:90vw;
+  }
+
+  .hero-sub{
+    width:min(390px,75vw);
+    margin-top:24px;
+    font-size:13px;
+  }
+
+  .content{
+    padding:0 7vw;
+    align-items:flex-end;
+    padding-bottom:10vh;
+  }
+
+  .content-inner{
+    width:100%;
+  }
+
+  .content.right,
+  .content.left{
+    justify-content:flex-start;
+  }
+
+  .section-title{
+    font-size:clamp(42px,11vw,68px);
+  }
+
+  .section-copy{
+    font-size:18px;
+    line-height:1.45;
+    margin-top:22px;
+  }
+
+  .content.center{
+    align-items:center;
+    padding-bottom:0;
+  }
+
+  .content.center .content-inner{
+    width:90vw;
+  }
+
+  .final-copy .section-title{
+    font-size:clamp(46px,12vw,76px);
+  }
+}
+
+@media(max-width:520px){
+
+  .hero-copy{
+    top:12%;
+  }
+
+  .hero-title{
+    font-size:47px;
+    letter-spacing:-.065em;
+  }
+
+  .hero-sub{
+    font-size:12px;
+    max-width:300px;
+  }
+
+  .red-caption{
+    font-size:10px;
+  }
+
+  .section-title{
+    font-size:44px;
+  }
+
+  .section-copy{
+    font-size:16px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<canvas id="particleCanvas"></canvas>
+
+<div class="page">
+
+  <!-- =====================================================
+       HERO
+  ====================================================== -->
+
+  <section class="section" data-state="skull">
+
+    <div class="hero-copy" id="heroCopy">
+
+      <h1 class="hero-title">
+        <span>NO PUEDES</span>
+        <span>ESCAPAR DE</span>
+        <span class="death">LA MUERTE.</span>
+      </h1>
+
+    </div>
+
+  </section>
+
+
+  <!-- =====================================================
+       SCENE 2 — PARTICLES DISPERSED
+  ====================================================== -->
+
+  <section class="section" data-state="dispersed">
+
+    <div class="content left" id="content2">
+
+      <div class="content-inner">
+
+        <div class="red-caption">EL EQUILIBRIO RECUERDA</div>
+
+        <div class="section-copy">
+
+          <p>
+            TODOS USTEDES HAN VIVIDO VIDAS ROBADAS
+          </p>
+
+          <p>
+            HAN DESAFIADO AL DESTINO Y AL UNIVERSO MISMO.
+            HAN VIOLADO SUS REGLAS
+          </p>
+
+          <p>
+            ES TIEMPO DE QUE EL UNIVERSO RETOME SU CURSO
+          </p>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- =====================================================
+       SCENE 3 — HEART
+  ====================================================== -->
+
+  <section class="section" data-state="heart">
+
+    <div class="content right heart-text">
+
+      <div class="content-inner">
+
+        <div class="red-caption">UN LATIDO MÁS</div>
+
+        <div class="section-copy">
+
+          <p>
+            CADA LATIDO QUE FORZARON DESPUÉS DE SU HORA
+            FUE UN INSULTO AL EQUILIBRIO
+          </p>
+
+          <p>
+            JUGARON A SER DIOSES CIEGOS CAMINANDO
+            AL BORDE DEL ABISMO.
+          </p>
+
+          <p>
+            NO SON SOBREVIVIENTES, SON ANOMALÍAS
+            PUDRIÉNDOSE EN TIEMPO PRESTADO
+          </p>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- =====================================================
+       SCENE 4 — VOID
+  ====================================================== -->
+
+  <section class="section" data-state="void">
+
+    <div class="content center final-copy">
+
+      <div class="content-inner">
+
+        <h2 class="section-title">
+          EL SUEÑO DE SU INMORTALIDAD HA TERMINADO.<br>
+          BIENVENIDOS AL VACÍO.
+        </h2>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- =====================================================
+       SCENE 5 — NUMBER 5
+  ====================================================== -->
+
+  <section class="section five-section" data-state="five">
+
+    <div class="five-label">
+      05
+    </div>
+
+  </section>
+
+</div>
+
+
+<script>
+/* =========================================================
+   PARTICLE SYSTEM
+========================================================= */
+
+const canvas = document.getElementById("particleCanvas");
+const ctx = canvas.getContext("2d", { alpha:true });
+
+const DPR = Math.min(window.devicePixelRatio || 1, 2);
+
+let width = 0;
+let height = 0;
+
+let particles = [];
+let skullTargets = [];
+let heartTargets = [];
+let fiveTargets = [];
+
+let scatteredTargets = [];
+let voidTargets = [];
+
+let currentState = "skull";
+let previousState = "skull";
+
+let scrollProgress = 0;
+let globalProgress = 0;
+
+let mouseX = 0;
+let mouseY = 0;
+
+let targetMouseX = 0;
+let targetMouseY = 0;
+
+
+/* =========================================================
+   COLORS — BLOOD / CRIMSON PALETTE
+========================================================= */
+
+const colors = [
+  "#450000",
+  "#650507",
+  "#82080d",
+  "#a50d15",
+  "#c41420",
+  "#e21b2a",
+  "#ff3040"
+];
+
+
+/* =========================================================
+   RANDOM HELPERS
+========================================================= */
+
+function rand(min,max){
+  return Math.random()*(max-min)+min;
+}
+
+function clamp(v,min,max){
+  return Math.max(min,Math.min(max,v));
+}
+
+function lerp(a,b,t){
+  return a+(b-a)*t;
+}
+
+function easeInOut(t){
+  return t < .5
+    ? 2*t*t
+    : 1-Math.pow(-2*t+2,2)/2;
+}
+
+function easeOut(t){
+  return 1-Math.pow(1-t,3);
+}
+
+
+/* =========================================================
+   RESIZE
+========================================================= */
+
+function resize(){
+
+  width = window.innerWidth;
+  height = window.innerHeight;
+
+  canvas.width = Math.floor(width * DPR);
+  canvas.height = Math.floor(height * DPR);
+
+  canvas.style.width = width + "px";
+  canvas.style.height = height + "px";
+
+  ctx.setTransform(DPR,0,0,DPR,0,0);
+
+  generateAllShapes();
+
+  if(!particles.length){
+    createParticles();
+  }
+}
+
+window.addEventListener("resize", resize);
+
+
+/* =========================================================
+   OFFSCREEN SHAPE SAMPLING
+========================================================= */
+
+function sampleCanvas(drawFunction, count){
+
+  const scale = Math.min(1.4, width / 1000);
+
+  const off = document.createElement("canvas");
+
+  const ow = Math.floor(width * .86);
+  const oh = Math.floor(height * .86);
+
+  off.width = Math.max(500,Math.floor(ow));
+  off.height = Math.max(500,Math.floor(oh));
+
+  const octx = off.getContext("2d");
+
+  octx.clearRect(0,0,off.width,off.height);
+
+  drawFunction(octx,off.width,off.height);
+
+  const data = octx.getImageData(
+    0,
+    0,
+    off.width,
+    off.height
+  ).data;
+
+  const available = [];
+
+  for(let y=0;y<off.height;y+=3){
+
+    for(let x=0;x<off.width;x+=3){
+
+      const index=(y*off.width+x)*4;
+      const alpha=data[index+3];
+
+      if(alpha>100){
+
+        available.push({
+          x,
+          y
+        });
+
+      }
+
+    }
+
+  }
+
+  const result=[];
+
+  for(let i=0;i<count;i++){
+
+    if(!available.length) break;
+
+    const p=available[
+      Math.floor(Math.random()*available.length)
+    ];
+
+    result.push({
+      x:(p.x/off.width)*width,
+      y:(p.y/off.height)*height
+    });
+
+  }
+
+  return result;
+}
+
+
+/* =========================================================
+   SKULL
+========================================================= */
+
+function generateSkull(){
+
+  const count = 3200;
+
+  return sampleCanvas((o,w,h)=>{
+
+    const cx=w*.64;
+    const cy=h*.5;
+
+    const skullW=w*.56;
+    const skullH=h*.66;
+
+    /* cranium */
+
+    o.beginPath();
+
+    o.ellipse(
+      cx,
+      cy-skullH*.04,
+      skullW*.47,
+      skullH*.43,
+      0,
+      0,
+      Math.PI*2
+    );
+
+    o.fillStyle="#fff";
+    o.fill();
+
+    /* cheek / jaw */
+
+    o.beginPath();
+
+    o.moveTo(cx-skullW*.39,cy+skullH*.12);
+
+    o.quadraticCurveTo(
+      cx-skullW*.36,
+      cy+skullH*.42,
+      cx-skullW*.16,
+      cy+skullH*.48
+    );
+
+    o.lineTo(cx-skullW*.12,cy+skullH*.65);
+
+    o.lineTo(cx+skullW*.12,cy+skullH*.65);
+
+    o.lineTo(cx+skullW*.16,cy+skullH*.48);
+
+    o.quadraticCurveTo(
+      cx+skullW*.36,
+      cy+skullH*.42,
+      cx+skullW*.39,
+      cy+skullH*.12
+    );
+
+    o.closePath();
+
+    o.fill();
+
+    /* eye holes */
+
+    o.globalCompositeOperation="destination-out";
+
+    o.beginPath();
+
+    o.ellipse(
+      cx-skullW*.19,
+      cy-skullH*.06,
+      skullW*.13,
+      skullH*.11,
+      -.18,
+      0,
+      Math.PI*2
+    );
+
+    o.fill();
+
+    o.beginPath();
+
+    o.ellipse(
+      cx+skullW*.19,
+      cy-skullH*.06,
+      skullW*.13,
+      skullH*.11,
+      .18,
+      0,
+      Math.PI*2
+    );
+
+    o.fill();
+
+    /* nose */
+
+    o.beginPath();
+
+    o.moveTo(cx,cy+skullH*.01);
+    o.lineTo(cx-skullW*.055,cy+skullH*.15);
+    o.lineTo(cx+skullW*.055,cy+skullH*.15);
+    o.closePath();
+
+    o.fill();
+
+    /* mouth */
+
+    o.beginPath();
+
+    o.roundRect(
+      cx-skullW*.19,
+      cy+skullH*.25,
+      skullW*.38,
+      skullH*.12,
+      skullW*.025
+    );
+
+    o.fill();
+
+    o.globalCompositeOperation="source-over";
+
+  },count);
+}
+
+
+/* =========================================================
+   HEART
+========================================================= */
+
+function generateHeart(){
+
+  const count=3200;
+
+  return sampleCanvas((o,w,h)=>{
+
+    const cx=w*.52;
+    const cy=h*.5;
+    const size=Math.min(w*.42,h*.66);
+
+    o.beginPath();
+
+    for(let i=0;i<=720;i++){
+
+      const t=(i/720)*Math.PI*2;
+
+      const x=
+        16*Math.pow(Math.sin(t),3);
+
+      const y=
+        -(
+          13*Math.cos(t)
+          -5*Math.cos(2*t)
+          -2*Math.cos(3*t)
+          -Math.cos(4*t)
+        );
+
+      const px=cx+x*(size/32);
+      const py=cy+y*(size/32);
+
+      if(i===0){
+        o.moveTo(px,py);
+      }else{
+        o.lineTo(px,py);
+      }
+
+    }
+
+    o.closePath();
+
+    o.fillStyle="#fff";
+    o.fill();
+
+  },count);
+}
+
+
+/* =========================================================
+   FIVE
+========================================================= */
+
+function generateFive(){
+
+  const count=3200;
+
+  return sampleCanvas((o,w,h)=>{
+
+    const fontSize=Math.min(w*.58,h*.78);
+
+    o.fillStyle="#fff";
+    o.textAlign="center";
+    o.textBaseline="middle";
+
+    o.font=`400 ${fontSize}px Inter`;
+
+    o.fillText(
+      "5",
+      w*.5,
+      h*.5
+    );
+
+  },count);
+}
+
+
+/* =========================================================
+   SCATTER
+========================================================= */
+
+function generateScatter(){
+
+  const result=[];
+
+  for(let i=0;i<3200;i++){
+
+    result.push({
+      x:rand(width*.02,width*.98),
+      y:rand(height*.02,height*.98)
+    });
+
+  }
+
+  return result;
+}
+
+
+/* =========================================================
+   VOID
+========================================================= */
+
+function generateVoid(){
+
+  const result=[];
+
+  for(let i=0;i<3200;i++){
+
+    const angle=Math.random()*Math.PI*2;
+    const distance=Math.pow(Math.random(),1.8);
+
+    result.push({
+      x:width*.5 + Math.cos(angle)*width*.8*distance,
+      y:height*.5 + Math.sin(angle)*height*.8*distance
+    });
+
+  }
+
+  return result;
+}
+
+
+/* =========================================================
+   GENERATE ALL
+========================================================= */
+
+function generateAllShapes(){
+
+  skullTargets=generateSkull();
+  heartTargets=generateHeart();
+  fiveTargets=generateFive();
+
+  scatteredTargets=generateScatter();
+  voidTargets=generateVoid();
+
+}
+
+
+/* =========================================================
+   PARTICLE CREATION
+========================================================= */
+
+function createParticles(){
+
+  const count=3200;
+
+  particles=[];
+
+  for(let i=0;i<count;i++){
+
+    const skull=skullTargets[i] || {
+      x:width*.5,
+      y:height*.5
+    };
+
+    const heart=heartTargets[i] || skull;
+    const five=fiveTargets[i] || skull;
+
+    particles.push({
+
+      x:skull.x + rand(-50,50),
+      y:skull.y + rand(-50,50),
+
+      vx:0,
+      vy:0,
+
+      tx:skull.x,
+      ty:skull.y,
+
+      sx:skull.x,
+      sy:skull.y,
+
+      size:rand(.9,2.8),
+
+      rotation:rand(0,Math.PI*2),
+      rotationSpeed:rand(-.025,.025),
+
+      color:colors[Math.floor(Math.random()*colors.length)],
+
+      alpha:rand(.45,.95),
+
+      phase:Math.random()*Math.PI*2,
+
+      skull,
+      heart,
+      five
+
+    });
+
+  }
+
+}
+
+
+/* =========================================================
+   STATE TARGETS
+========================================================= */
+
+function targetForParticle(p,index,state){
+
+  let target;
+
+  if(state==="skull"){
+
+    target=p.skull;
+
+  }else if(state==="dispersed"){
+
+    target=scatteredTargets[index % scatteredTargets.length];
+
+  }else if(state==="heart"){
+
+    target=p.heart;
+
+  }else if(state==="void"){
+
+    target=voidTargets[index % voidTargets.length];
+
+  }else if(state==="five"){
+
+    target=p.five;
+
+  }
+
+  return target;
+}
+
+
+/* =========================================================
+   SCROLL
+========================================================= */
+
+function updateScroll(){
+
+  const maxScroll=
+    document.documentElement.scrollHeight-window.innerHeight;
+
+  const currentScroll=window.scrollY;
+
+  globalProgress=
+    clamp(currentScroll/maxScroll,0,1);
+
+  const sectionCount=5;
+
+  const position=globalProgress*(sectionCount-1);
+
+  const index=Math.floor(position);
+
+  const local=position-index;
+
+  let state="skull";
+
+  if(index===0) state="skull";
+  if(index===1) state="dispersed";
+  if(index===2) state="heart";
+  if(index===3) state="void";
+  if(index>=4) state="five";
+
+  currentState=state;
+
+  scrollProgress=local;
+
+}
+
+window.addEventListener("scroll",updateScroll,{passive:true});
+
+
+/* =========================================================
+   MOUSE
+========================================================= */
+
+window.addEventListener("pointermove",(e)=>{
+
+  targetMouseX=(e.clientX/width-.5)*2;
+  targetMouseY=(e.clientY/height-.5)*2;
+
+});
+
+
+/* =========================================================
+   UPDATE PARTICLES
+========================================================= */
+
+function updateParticles(time){
+
+  mouseX=lerp(mouseX,targetMouseX,.035);
+  mouseY=lerp(mouseY,targetMouseY,.035);
+
+  const particleCount=particles.length;
+
+  const stagePosition=
+    globalProgress*4;
+
+  const stateIndex=Math.floor(stagePosition);
+
+  const localProgress=
+    stagePosition-stateIndex;
+
+  let fromState;
+  let toState;
+
+  if(stateIndex<=0){
+
+    fromState="skull";
+    toState="dispersed";
+
+  }else if(stateIndex===1){
+
+    fromState="dispersed";
+    toState="heart";
+
+  }else if(stateIndex===2){
+
+    fromState="heart";
+    toState="void";
+
+  }else{
+
+    fromState="void";
+    toState="five";
+
+  }
+
+  const transition=easeInOut(clamp(localProgress,0,1));
+
+  for(let i=0;i<particleCount;i++){
+
+    const p=particles[i];
+
+    const a=targetForParticle(p,i,fromState);
+    const b=targetForParticle(p,i,toState);
+
+    let tx=lerp(a.x,b.x,transition);
+    let ty=lerp(a.y,b.y,transition);
+
+    /* ambient organic motion */
+
+    const movementScale=
+      fromState==="skull" || toState==="heart"
+      ? 1
+      : 2.7;
+
+    const waveX=
+      Math.sin(time*.00055+p.phase+i*.0011)
+      *movementScale;
+
+    const waveY=
+      Math.cos(time*.00042+p.phase*1.7+i*.0007)
+      *movementScale;
+
+    tx+=waveX;
+    ty+=waveY;
+
+    /* mouse influence */
+
+    const mx=
+      p.x + mouseX*8;
+
+    const my=
+      p.y + mouseY*8;
+
+    const dx=mx-tx;
+    const dy=my-ty;
+
+    tx+=dx*.008;
+    ty+=dy*.008;
+
+    const attraction=
+      fromState==="void" || toState==="void"
+      ? .018
+      : .055;
+
+    p.vx+=(tx-p.x)*attraction;
+    p.vy+=(ty-p.y)*attraction;
+
+    /* friction */
+
+    p.vx*=.83;
+    p.vy*=.83;
+
+    /* slight chaotic particle drift */
+
+    p.vx+=Math.sin(time*.0007+p.phase)*.002;
+    p.vy+=Math.cos(time*.0005+p.phase)*.002;
+
+    p.x+=p.vx;
+    p.y+=p.vy;
+
+    p.rotation+=p.rotationSpeed;
+
+    /* appearance transition */
+
+    const distanceToTarget=
+      Math.hypot(tx-p.x,ty-p.y);
+
+    let alpha=p.alpha;
+
+    if(toState==="void" || fromState==="void"){
+
+      const voidFactor=
+        Math.sin(localProgress*Math.PI);
+
+      alpha*=.45 + voidFactor*.55;
+
+    }
+
+    if(
+      currentState==="dispersed" &&
+      globalProgress>0.22 &&
+      globalProgress<0.28
+    ){
+
+      alpha*=.8;
+
+    }
+
+    drawTriangle(
+      p.x,
+      p.y,
+      p.size,
+      p.rotation,
+      p.color,
+      alpha
+    );
+
+  }
+}
+
+
+/* =========================================================
+   TRIANGLE DRAW
+========================================================= */
+
+function drawTriangle(x,y,size,rotation,color,alpha){
+
+  ctx.save();
+
+  ctx.translate(x,y);
+  ctx.rotate(rotation);
+
+  ctx.globalAlpha=alpha;
+
+  ctx.strokeStyle=color;
+  ctx.lineWidth=.8;
+
+  ctx.beginPath();
+
+  ctx.moveTo(0,-size);
+  ctx.lineTo(size*.86,size*.55);
+  ctx.lineTo(-size*.86,size*.55);
+  ctx.closePath();
+
+  ctx.stroke();
+
+  ctx.restore();
+
+}
+
+
+/* =========================================================
+   AMBIENT TRIANGLES
+========================================================= */
+
+const ambient=[];
+
+function createAmbient(){
+
+  ambient.length=0;
+
+  for(let i=0;i<130;i++){
+
+    ambient.push({
+
+      x:rand(0,width),
+      y:rand(0,height),
+
+      size:rand(2,7),
+
+      rotation:rand(0,Math.PI*2),
+
+      speed:rand(.05,.18),
+
+      color:colors[
+        Math.floor(Math.random()*colors.length)
+      ],
+
+      alpha:rand(.08,.28),
+
+      phase:Math.random()*Math.PI*2
+
+    });
+
+  }
+
+}
+
+function updateAmbient(time){
+
+  for(const p of ambient){
+
+    p.y-=p.speed;
+
+    p.x+=
+      Math.sin(time*.0003+p.phase)*.08;
+
+    p.rotation+=.0015;
+
+    if(p.y<-20){
+      p.y=height+20;
+      p.x=rand(0,width);
+    }
+
+    drawTriangle(
+      p.x,
+      p.y,
+      p.size,
+      p.rotation,
+      p.color,
+      p.alpha
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   RENDER
+========================================================= */
+
+function render(time){
+
+  ctx.clearRect(0,0,width,height);
+
+  updateAmbient(time);
+
+  updateParticles(time);
+
+  requestAnimationFrame(render);
+
+}
+
+
+/* =========================================================
+   INITIALIZE
+========================================================= */
+
+function init(){
+
+  resize();
+
+  createAmbient();
+
+  createParticles();
+
+  updateScroll();
+
+  requestAnimationFrame(render);
+
+}
+
+init();
+
+</script>
+
+</body>
+</html>
